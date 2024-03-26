@@ -64,19 +64,21 @@ export default function GuessCard() {
             }   
         } catch (err) {
             console.log("err: ", err);
-            let revertReason;
-            try {
-                const parsedError = contract.interface.parseError(err.data);
-                revertReason = parsedError!.args[0];
-            } catch {
-                revertReason = "Unknown custom error!";
-            };
-            notifications.show({
-                title: 'Error',
-                message: revertReason,
-                color: "red",
-                autoClose: 4000,
-            });
+            if (err instanceof Error) {
+                let revertReason;
+                try {
+                    const parsedError = contract.interface.parseError(err.data);
+                    revertReason = parsedError!.args[0];
+                } catch {
+                    revertReason = "Unknown custom error!";
+                };
+                notifications.show({
+                    title: 'Error',
+                    message: revertReason,
+                    color: "red",
+                    autoClose: 4000,
+                });
+            }
         }  
     });
 
