@@ -20,8 +20,8 @@ You can play the Guessing Game directly on this website [Coming soon...](http://
 To run the game locally clone the repository, install dependencies and lunch the game:
 
 ```Shell
-    git clone <repository-url>
-    cd frontend
+    git clone https://github.com/KatyaRyazantseva/Guessing-game.git
+    cd next-app
     yarn install
     yarn run dev
 ```
