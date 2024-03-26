@@ -8,30 +8,31 @@ contract GuessingGame is Ownable {
     bytes32 public secretNumber;
     IERC20 public guessingToken;
 
-    event Winner(address indexed player, uint256 prize);
-    event Loser(address indexed player, uint256 amountAdded);
+    event Winner(address indexed player, uint256 guessNumber, uint256 prize);
+    event Loser(address indexed player, uint256 guessNumber);
 
-    constructor(address initialOwner, address guessingTokenAddress, bytes32 _secretNumber) Ownable(initialOwner) {
+    constructor(address initialOwner, address guessingTokenAddress) Ownable(initialOwner) {
         guessingToken = IERC20(guessingTokenAddress);
-        secretNumber = _secretNumber;
     }
 
-    function guess(uint256 _guess) public payable returns(bool) {
+    function guess(uint256 guessNumber) public payable {
+        require(msg.sender != owner(), "Owner can't play");
         require(msg.value == 0.001 ether, "Must send 0.001 ETH to play");
-        if (keccak256(abi.encodePacked(_guess)) == secretNumber) {
+        if (keccak256(abi.encodePacked(guessNumber)) == secretNumber) {
             uint256 prize = address(this).balance * 80 / 100;
             payable(msg.sender).transfer(prize);
-            guessingToken.transferFrom(address(this), msg.sender, 100 ether);
-            emit Winner(msg.sender, prize);
-            return true;
+            guessingToken.transferFrom(owner(), msg.sender, 100 ether);
+            emit Winner(msg.sender, guessNumber, prize);
         } else {
-            emit Loser(msg.sender, msg.value);
-            return false;
+            emit Loser(msg.sender, guessNumber);
         }
     }
 
-    function setSecretNumber(uint256 _newSecretNumber) public {
-        require(msg.sender == owner(), "Only the owner can change the secret number");
-        secretNumber = keccak256(abi.encodePacked(_newSecretNumber));
+    function setSecretNumber(bytes32 _secretNumber) public onlyOwner {
+        secretNumber = _secretNumber;
+    }
+
+    function getPrizeAmount() public view returns(uint256) {
+        return address(this).balance * 80 / 100;
     }
 }

@@ -1,17 +1,20 @@
 import * as React from 'react';
 import {
-  Unstable_NumberInput as BaseNumberInput,
-  NumberInputProps,
+ Unstable_NumberInput as BaseNumberInput,
+ NumberInputProps,
 } from '@mui/base/Unstable_NumberInput';
 import { styled } from '@mui/system';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
 const NumberInput = React.forwardRef(function CustomNumberInput(
-  props: NumberInputProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+ props: NumberInputProps & { 
+  onChange: 
+    ((event: React.FocusEvent<HTMLInputElement, Element> | React.PointerEvent<Element> | React.KeyboardEvent<Element>, 
+      value: number | null | undefined ) => void)}, 
+ ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  return (
+ return (
     <BaseNumberInput
       slots={{
         root: StyledInputRoot,
@@ -31,12 +34,16 @@ const NumberInput = React.forwardRef(function CustomNumberInput(
       {...props}
       ref={ref}
     />
-  );
+ );
 });
 
-export default function StyledNumberInput() {
-  return <NumberInput aria-label="Quantity Input" min={1} max={9} />;
+export default function StyledNumberInput({ value, onChange }: {value: number | null | undefined, 
+ onChange: ((event: React.FocusEvent<HTMLInputElement, Element> | React.PointerEvent<Element> | React.KeyboardEvent<Element>, 
+  value: number | null | undefined) => void)}) {
+ return <NumberInput aria-label="Quantity Input" min={1} max={9} value={value} 
+ onChange={onChange}/>;
 }
+
 
 const blue = {
   100: '#daecff',

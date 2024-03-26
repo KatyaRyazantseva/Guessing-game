@@ -1,6 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 
-export const theme = createTheme({
+export const muiTheme = createTheme({
   typography: {
     fontFamily: 'Rubik',
   },
@@ -40,6 +40,13 @@ export const theme = createTheme({
         },
         lastButton: {
           borderRadius: '4px',
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: "#e5e5e5",
         },
       },
     },

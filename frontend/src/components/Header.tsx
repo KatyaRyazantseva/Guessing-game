@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useEthereum } from './web3/Context';
 import Image from "next/image";
 import { AppBar, Box, Toolbar, Button, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { ToggleMenuContext } from './ToggleMenuContext'; 
-import { notifications } from "@mantine/notifications";
 
 export default function Header() {
     const { account, connect, disconnect } = useEthereum();
@@ -22,7 +21,9 @@ export default function Header() {
     };
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box 
+            sx={{ flexGrow: 1,  color: '#f5f5f5'}}
+        >
             <AppBar 
                 position="static" 
                 sx={{ 
@@ -63,7 +64,7 @@ export default function Header() {
                         </ToggleButton>
                         <ToggleButton value={false}>
                             <Typography variant="h6" >
-                                PICK
+                                SECRET
                             </Typography>
                         </ToggleButton>
                     </ToggleButtonGroup>

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import { EthereumProvider } from '../components/web3/Context';
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-
-
+import { ColorSchemeScript } from '@mantine/core';
 
 export const metadata: Metadata = {
   title: 'Guessing game',
@@ -19,16 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-          <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
-          <ColorSchemeScript />
+        <link rel="icon" href="/favicon.ico" />
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
+        <ColorSchemeScript />
       </head>
       <body>
         <EthereumProvider>
-          <MantineProvider>
-            {children}
-          </MantineProvider>
+          {children}
         </EthereumProvider>
-        
       </body>
     </html>
   )
