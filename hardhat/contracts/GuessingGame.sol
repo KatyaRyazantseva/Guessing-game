@@ -20,8 +20,9 @@ contract GuessingGame is Ownable {
         require(msg.value == 0.001 ether, "Must send 0.001 ETH to play");
         if (keccak256(abi.encodePacked(guessNumber)) == secretNumber) {
             uint256 prize = address(this).balance * 80 / 100;
-            payable(msg.sender).transfer(prize);
-            guessingToken.transferFrom(owner(), msg.sender, 100 ether);
+            (bool success,)= payable(msg.sender).call{value: prize}("");
+            require(success, "Ether transfer failed");
+            guessingToken.transfer(msg.sender, 100 ether);
             emit Winner(msg.sender, guessNumber, prize);
         } else {
             emit Loser(msg.sender, guessNumber);

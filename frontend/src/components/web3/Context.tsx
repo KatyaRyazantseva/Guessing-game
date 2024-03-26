@@ -30,28 +30,10 @@ const zkSyncGoerliTestnet: Chain = {
   blockExplorerUrl: "https://goerli.explorer.zksync.io"
 }
 export const chains: Chain[] = [
-  zkSync,
   zkSyncSepoliaTestnet,
-  zkSyncGoerliTestnet,
-  ...(
-    process.env.NODE_ENV === "development" ?
-    [
-        {
-          id: 270,
-          name: "Dockerized local node",
-          rpcUrl: 'http://localhost:3050',
-          blockExplorerUrl: "http://localhost:3010"
-        },
-        {
-          id: 260,
-          name: "In-memory local node",
-          rpcUrl: 'http://127.0.0.1:8011',
-        },
-      ]
-      : []
-    ),
 ];
-export const defaultChain = process.env.NODE_ENV === "development" ? zkSyncSepoliaTestnet : zkSync;
+
+export const defaultChain = zkSyncSepoliaTestnet;
 
 let web3Provider: BrowserProvider | null = null;
 

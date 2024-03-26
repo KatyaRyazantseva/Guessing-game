@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { ethers } from 'ethers';
 

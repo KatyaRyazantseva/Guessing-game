@@ -7,6 +7,7 @@ import { useAsync } from '../hooks/useAsync';
 import { ToggleMenuContext } from './ToggleMenuContext'; 
 import {Typography, Button, Stack, Box, CardMedia, Divider, CircularProgress } from '@mui/material';
 import StyledNumberInput from './StyledNumberInput';
+import Confetti from 'react-confetti';
 import { Notifications, notifications } from "@mantine/notifications";
 
 export default function GuessCard() {
@@ -14,6 +15,7 @@ export default function GuessCard() {
     const { toggleMenuValue } = useContext(ToggleMenuContext);
     const [inputValue, setInputValue] = useState<number | null | undefined>(0); 
     const [isGuessSelected, setIsGuessSelected] = useState<Boolean>(true);
+    const [isConfettiVisible, setIsConfettiVisible] = useState(false);
     const [appData, updateAppData] = useState<Boolean>(false);
 
     const { result: walletEthBalance, execute: fetchWalletEthBalance } = useAsync(address => getProvider()!.getBalance(address));
@@ -52,7 +54,6 @@ export default function GuessCard() {
                     color: "#8587d4",
                     autoClose: 4000,
                 });
-                setInputValue(0);
             } else {
                 notifications.show({
                     title: 'Error',
@@ -82,8 +83,13 @@ export default function GuessCard() {
     const { execute: guessSecretNumber, inProgress: guessInProgress, error: guessError } = useAsync(async (inputValue) => {
         const contract = new Contract(gameContractConfig.address, gameContractConfig.abi, await getSigner());
         try {
-            const tx = await contract.guess(inputValue, {value: ethers.parseEther("0.001"),});
+            console.log(`inputValue: ${inputValue} type `, typeof(inputValue));
+            const ethValue = ethers.parseEther("0.001");
+            console.log(`ethValue: ${ethValue} type `, typeof(ethValue));
+            const tx = await contract.guess(inputValue, {value: ethValue});
+            console.log("tx: ", tx);
             const receipt = await getProvider()!.getTransactionReceipt(tx.hash);
+            console.log("recept: ", receipt);
             if (receipt.status === 1) {
                 const gameInterface = new ethers.Interface(gameContractConfig.abi);
                 receipt.logs.forEach(log => {
@@ -96,6 +102,8 @@ export default function GuessCard() {
                                 color: "#e287d6",
                                 autoClose: 4000,
                             });
+                            setIsConfettiVisible(true);
+                            setTimeout(() => setIsConfettiVisible(false), 5000); 
                             setInputValue(0);
                             return;
                         };
@@ -106,7 +114,6 @@ export default function GuessCard() {
                                 color: "#8c8c8c",
                                 autoClose: 4000,
                             }) 
-                            setInputValue(0);
                             return;
                         } 
                     } catch {
@@ -126,22 +133,22 @@ export default function GuessCard() {
                     autoClose: 4000,
                 }) 
             }   
-        } catch (err) {
+        } catch (err: unknown) {
             console.log("err: ", err);
-            let revertReason;
+            let msg;
             try {
                 const parsedError = contract.interface.parseError(err.data);
-                revertReason = parsedError!.args[0];
+                msg = parsedError!.args[0];
             } catch {
-                revertReason = "Unknown custom error!";
+                msg = `${err.code as string}: ${err.message}`;
             };
             notifications.show({
                 title: 'Error',
-                message: revertReason,
+                message: msg,
                 color: "red",
                 autoClose: 4000,
             });
-        }  
+        } 
     });
 
     const handleInputChange = (event: any, inputValue: number | null | undefined) => {
@@ -198,6 +205,7 @@ export default function GuessCard() {
             style={{ minHeight: "calc(100vh - 64px)", width: '100%', backgroundColor: '#e5e5e5' }}
         >   
             <Notifications />
+            {isConfettiVisible && <Confetti />}
             <Box display="flex" style={{  width: '70%' }}>
                 <Box
                     display="flex"
