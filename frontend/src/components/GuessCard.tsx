@@ -83,13 +83,9 @@ export default function GuessCard() {
     const { execute: guessSecretNumber, inProgress: guessInProgress, error: guessError } = useAsync(async (inputValue) => {
         const contract = new Contract(gameContractConfig.address, gameContractConfig.abi, await getSigner());
         try {
-            console.log(`inputValue: ${inputValue} type `, typeof(inputValue));
             const ethValue = ethers.parseEther("0.001");
-            console.log(`ethValue: ${ethValue} type `, typeof(ethValue));
             const tx = await contract.guess(inputValue, {value: ethValue});
-            console.log("tx: ", tx);
             const receipt = await getProvider()!.getTransactionReceipt(tx.hash);
-            console.log("recept: ", receipt);
             if (receipt.status === 1) {
                 const gameInterface = new ethers.Interface(gameContractConfig.abi);
                 receipt.logs.forEach(log => {
