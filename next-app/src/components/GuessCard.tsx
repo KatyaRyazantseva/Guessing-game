@@ -67,7 +67,7 @@ export default function GuessCard() {
             if (err instanceof Error) {
                 let revertReason;
                 try {
-                    const parsedError = contract.interface.parseError(err.data);
+                    const parsedError = contract.interface.parseError((err as any).data);
                     revertReason = parsedError!.args[0];
                 } catch {
                     revertReason = "Unknown custom error!";
@@ -135,10 +135,10 @@ export default function GuessCard() {
             console.log("err: ", err);
             let msg;
             try {
-                const parsedError = contract.interface.parseError(err.data);
+                const parsedError = contract.interface.parseError((err as any).data);
                 msg = parsedError!.args[0];
             } catch {
-                msg = `${err.code as string}: ${err.message}`;
+                msg = `${(err as any).code as string}: ${(err as any).message}`;
             };
             notifications.show({
                 title: 'Error',
