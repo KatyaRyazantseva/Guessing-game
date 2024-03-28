@@ -13,7 +13,7 @@ To participate in the Guessing Game, you need to have some testnet ETH. You can 
 
 ## Playing the Game
 
-You can play the Guessing Game directly on this website [Coming soon...](http://example.com). Alternatively, you can clone the repository and run the game locally as described above.
+You can play the Guessing Game directly on this website [Guessing game](https://guessing-game-ruby.vercel.app/). Alternatively, you can clone the repository and run the game locally as described above.
 
 ## Running the Game Locally
 
