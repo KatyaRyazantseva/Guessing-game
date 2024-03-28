@@ -7,7 +7,6 @@
   "repository": "https://github.com/matter-labs/zksync-hardhat-template.git",
   "scripts": {
     "deploy": "hardhat deploy-zksync --script deploy.ts",
-    "interact": "hardhat deploy-zksync --script interact.ts",
     "compile": "hardhat compile",
     "clean": "hardhat clean",
     "test": "hardhat test --network hardhat"
@@ -25,7 +24,7 @@
     "@openzeppelin/contracts": "^5.0.2",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
-    "chai": "^5.1.0",
+    "chai": "^4.3.7",
     "dotenv": "^16.0.3",
     "ethers": "^6.11.1",
     "hardhat": "^2.12.4",
@@ -36,5 +35,8 @@
   },
   "dependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5"
+  },
+  "mocha": {
+    "loader": "ts-node/esm"
   }
 }

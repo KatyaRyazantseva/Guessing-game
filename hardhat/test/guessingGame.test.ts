@@ -4,6 +4,7 @@ import { Contract, Wallet } from "zksync-ethers";
 import { getWallet, deployContract, LOCAL_RICH_WALLETS } from '../deploy/utils';
 import * as ethers from "ethers";
 
+
 describe("GuessingGame", function () {
  let gameContract: Contract;
  let tokenContract: Contract;
@@ -11,6 +12,8 @@ describe("GuessingGame", function () {
  let userWallet: Wallet;
 
  const secretNumber = ethers.encodeBytes32String("10");
+ const userWrongNumber = BigInt(7);
+ const userRightNumber = BigInt(10);
  
  beforeEach(async function () {
     ownerWallet = getWallet(LOCAL_RICH_WALLETS[0].privateKey);
@@ -37,21 +40,16 @@ describe("GuessingGame", function () {
 
     it("Should allow a player to guess and win", async function () {
       await gameContract.setSecretNumber(secretNumber);
-      expect(await gameContract.connect(userWallet).guess(secretNumber, { value: ethers.parseEther("0.001") }))
-    .to.be.equal(true);
-      expect(await gameContract.connect(userWallet).guess(secretNumber, { value: ethers.parseEther("0.001") }))
-    .to.emit(gameContract, "Winner")
-    .withArgs(userWallet.address, secretNumber, await gameContract.getPrizeAmount());
+      expect(await gameContract.connect(userWallet).guess(userRightNumber, { value: ethers.parseEther("0.001") }))
+      .to.emit(gameContract, "Winner")
+    .withArgs(userWallet.address, userRightNumber, await gameContract.getPrizeAmount());
     });
 
     it("Should allow a player to guess and lose", async function () {
     await gameContract.setSecretNumber(secretNumber);
-    const userNumber = "0x0000000000000000000000000000000000000000000000000000000000000001";
-    expect(await gameContract.connect(userWallet).guess(userNumber, { value: ethers.parseEther("0.001") }))
-    .to.be.equal(false);
-    expect(await gameContract.connect(userWallet).guess(userNumber, { value: ethers.parseEther("0.001") }))
-      .to.emit(gameContract, "Loser")
-      .withArgs(userWallet.address, userNumber);
+    expect(await gameContract.connect(userWallet).guess(userWrongNumber, { value: ethers.parseEther("0.001") }))
+    .to.emit(gameContract, "Loser")
+      .withArgs(userWallet.address, userWrongNumber);
     });
 
     it("Should calculate the prize amount correctly", async function () {

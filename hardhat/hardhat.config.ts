@@ -14,6 +14,16 @@ const config: HardhatUserConfig = {
       zksync: true,
       verifyURL: "https://explorer.sepolia.era.zksync.dev/contract_verification",
     },
+    dockerizedNode: {
+      url: "http://localhost:3050",
+      ethNetwork: "http://localhost:8545",
+      zksync: true,
+    },
+    inMemoryNode: {
+      url: "http://127.0.0.1:8011",
+      ethNetwork: "localhost", // in-memory node doesn't support eth node; removing this line will cause an error
+      zksync: true,
+    },
     hardhat: {
       zksync: true,
     },
