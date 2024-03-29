@@ -38,7 +38,9 @@ The Guessing Game is built on the zkSync Era Testnet, a layer 2 scaling solution
 ## Smart Contract Addresses
 
 - **GuessingToken**: [`0xB93cDC20321D10DB27368e9BD1F141DECa943468`](https://sepolia.explorer.zksync.io/address/0xB93cDC20321D10DB27368e9BD1F141DECa943468)
-- **GuessingGame**: [`0xCBcC71e3e1ffe9021075e288076F5410EF1Ce266`](https://sepolia.explorer.zksync.io/address/0xCBcC71e3e1ffe9021075e288076F5410EF1Ce266)
+- **GuessingGame**: [`0xCBcC71e3e1ffe9021075e288076F5410EF1Ce266`](https://sepolia.explorer.zksync.io/address/0x9051Ae552cB76EeE6D2418683e50Dae04367413b)
+
+To test and deploy the smart contracts, follow the instuctions in the [hardhat README.md](hardhat/README.md)
 
 ## License
 

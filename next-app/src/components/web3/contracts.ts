@@ -11,6 +11,6 @@ export const guessTokenContractConfig = {
 } as const;
 
 export const gameContractConfig = {
-  address: "0xCBcC71e3e1ffe9021075e288076F5410EF1Ce266",
+  address: "0x9051Ae552cB76EeE6D2418683e50Dae04367413b",
   abi: gameABI,
 } as const;

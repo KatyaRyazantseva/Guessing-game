@@ -10,6 +10,7 @@ contract GuessingGame is Ownable {
 
     event Winner(address indexed player, uint256 guessNumber, uint256 prize);
     event Loser(address indexed player, uint256 guessNumber);
+    event Secret(address indexed gameOwner, bytes32 newSecretNumber);
 
     constructor(address initialOwner, address guessingTokenAddress) Ownable(initialOwner) {
         guessingToken = IERC20(guessingTokenAddress);
@@ -31,6 +32,7 @@ contract GuessingGame is Ownable {
 
     function setSecretNumber(bytes32 _secretNumber) public onlyOwner {
         secretNumber = _secretNumber;
+        emit Secret(msg.sender, _secretNumber);
     }
 
     function getPrizeAmount() public view returns(uint256) {

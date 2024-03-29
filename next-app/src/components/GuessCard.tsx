@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useEthereum } from './web3/Context';
-import { Contract } from 'zksync-ethers';
+import { Contract, BrowserProvider } from 'zksync-ethers';
 import { ethers } from 'ethers';
 import { guessTokenContractConfig, gameContractConfig } from './web3/contracts';
 import { useAsync } from '../hooks/useAsync';
@@ -269,6 +269,7 @@ export default function GuessCard() {
                                 color="secondary" 
                                 variant="contained" 
                                 sx={{ minWidth: '170px', maxWidth: '170px', marginBottom: '30px' }}
+                                disabled = { account.isConnected ? false : true }
                                 onClick={() => handleClick(inputValue)}                             
                             >
                                 {isGuessSelected ? "Guess" : "Select"}

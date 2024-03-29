@@ -15,7 +15,7 @@ This project was scaffolded with [zksync-cli](https://github.com/matter-labs/zks
 - `yarn deploy`: Deploys using script `/deploy/deploy.ts`.
 - `yarn test`: Tests the contracts.
 
-Note: `npm run deploy` is set in the `package.json`. You can also run your files directly, for example: `npx hardhat deploy-zksync --script deploy.ts`
+Note: `yarn deploy` is set in the `package.json`. You can also run your files directly, for example: `yarn hardhat deploy-zksync --script deploy.ts`
 
 ### Environment Settings
 
