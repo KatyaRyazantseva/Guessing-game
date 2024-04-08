@@ -1,39 +1,35 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { useEthereum } from './web3/Context';
+import { useEthereum } from '../web3/Context';
 import { ErrorDescription, ethers } from 'ethers';
-import { useEthBalance, useTokenBalance } from '../hooks/useBalance';
-import { usePrizePool } from '../hooks/usePrizePool';
-import { useGuessSecretNumber } from '../hooks/contractReadWrite';
+import { gameContractConfig } from '../web3/contracts';
+import { useEthBalance, useTokenBalance } from '../../hooks/useBalance';
+import { useSelectSecretNumber } from '../../hooks/contractReadWrite';
 import {Typography, Button, Stack, Box, CardMedia, Divider, CircularProgress } from '@mui/material';
-import StyledNumberInput from '../components/StyledNumberInput';
-import Confetti from 'react-confetti';
+import StyledNumberInput from '../../components/StyledNumberInput';
 import { Notifications, notifications } from "@mantine/notifications";
-import { SecretNumberActionStatus, NotificationStatusColor } from '../utils/enums';
-import { gameContractConfig } from "../app/web3/contracts";
+import { SecretNumberActionStatus, NotificationStatusColor } from '../../utils/enums';
 
-export default function Guess() {
+export default function Select() {
     const { account, getProvider } = useEthereum();
-    const { ethBalance: walletEthBalance, fetchEthBalance: fetchWalletEthBalance } = useEthBalance(account.address);
-    const { tokenBalance: walletGuessBalance, fetchTokenBalance: fetchWalletGuessBalance } = useTokenBalance(account.address);
-    const { prizePool: prizePool, fetchPrizePool: fetchPrizePool }  = usePrizePool();
-    const [guessNumber, setGuessNumber] = useState<number | null | undefined>(null); 
-    const [isConfettiVisible, setIsConfettiVisible] = useState(false);
+    const { ethBalance: contractEthBalance, fetchEthBalance: fetchContractEthBalance } = useEthBalance(gameContractConfig.address);
+    const { tokenBalance: contractGuessBalance, fetchTokenBalance: fetchContractGuessBalance } = useTokenBalance(gameContractConfig.address);
+    const [secretNumber, setSecretNumber] = useState<number | null | undefined>(null);  
     const { 
-        guessResult: guessResult, 
-        guessSecretNumber: guessSecretNumber,
-        guessError: guessError,
-        guessInProgress: guessInProgress
-     }  = useGuessSecretNumber();
-    
+        selectResult: selectResult, 
+        selectSecretNumber: selectSecretNumber,
+        selectError: selectError,
+        selectInProgress: selectInProgress
+     }  = useSelectSecretNumber();
+
     const handleInputChange = (event: any, inputValue: number | null | undefined) => {
         if ((inputValue != undefined) && (inputValue >=1) && (inputValue <= 10)) {
-            setGuessNumber(inputValue);
+            setSecretNumber(inputValue);
         }
-    };
+     };
 
     const handleClick = async () => { 
-        if (guessNumber == null) {
+        if (secretNumber == null) {
             notifications.show({
                 title:  SecretNumberActionStatus.Error,
                 message: "Incorrect number!",
@@ -43,57 +39,27 @@ export default function Guess() {
             return;
         };
         try {
-            await guessSecretNumber(guessNumber);
-        } catch (e) {
-            const err = e instanceof Error ? e : new Error("An unexpected error occurred.")
+            await selectSecretNumber(secretNumber);
+        } catch {
             notifications.show({
                 title: SecretNumberActionStatus.Error,
-                message: err.message,
+                message: selectError?.message,
                 color: NotificationStatusColor.Error,
                 autoClose: 4000,
             });
-        } 
-        updateBalances();   
-    };
+        }    
+    }
 
     useEffect(() => {
-        if (guessResult == null) return;
-        if (guessResult?.status === 1) {
-            const gameInterface = new ethers.Interface(gameContractConfig.abi);
-            guessResult.logs.forEach(log => {
-                try {
-                    const parsedLog = gameInterface.parseLog(log);
-                    if ((parsedLog != null && parsedLog.name as string) === "Winner") {
-                        notifications.show({
-                            title: "Yeaaaah!!!",
-                            message: "Congratulations! You've guessed the secret number!",
-                            color: NotificationStatusColor.Success,
-                            autoClose: 4000,
-                        });
-                        setIsConfettiVisible(true);
-                        setTimeout(() => setIsConfettiVisible(false), 5000); 
-                        setGuessNumber(null); 
-                        updateBalances();
-                        return;   
-                    };
-                    if ((parsedLog != null && parsedLog.name as string) === "Loser") {
-                        notifications.show({
-                            title: "Oops! :(",
-                            message: "This time you haven't succeeded. Try again!",
-                            color: NotificationStatusColor.Failed,
-                            autoClose: 4000,
-                        });
-                        updateBalances();
-                    } 
-                } catch {
-                    notifications.show({
-                        title: 'Error',
-                        message: "Parcing logs error!",
-                        color: "red",
-                        autoClose: 4000,
-                    })
-                }
-            })
+        if (selectResult == null) return;
+        if (selectResult?.status === 1) {
+            notifications.show({
+                title: SecretNumberActionStatus.Success,
+                message: "The secret number has been selected successfully.",
+                color: NotificationStatusColor.Success,
+                autoClose: 4000,
+            });
+            setSecretNumber(null);
         } else {
             notifications.show({
                 title: 'Error',
@@ -101,13 +67,13 @@ export default function Guess() {
                 color: "red",
                 autoClose: 4000,
             })
-        };
-    }, [guessResult]);
-
+        };   
+    }, [selectResult]);
+    
     useEffect(() => {
-        if (guessError != null) {
+        if (selectError != null) {
             const gameInterface = new ethers.Interface(gameContractConfig.abi);
-            const parsedError = gameInterface.parseError((guessError as any).data);
+            const parsedError = gameInterface.parseError((selectError as any).data);
             notifications.show({
                 title: SecretNumberActionStatus.Error,
                 message: parsedError instanceof ErrorDescription ? parsedError.name : parsedError!.args[0],
@@ -115,13 +81,12 @@ export default function Guess() {
                 autoClose: 4000,
             });
         }
-    }, [guessError]); 
+    }, [selectError]); 
 
     function updateBalances() {
-        fetchWalletEthBalance();
-        fetchWalletGuessBalance();
-        fetchPrizePool();
-    };
+        fetchContractEthBalance();
+        fetchContractGuessBalance();
+    }
 
     useEffect(() => {
         updateBalances();
@@ -135,7 +100,6 @@ export default function Guess() {
             style={{ minHeight: "calc(100vh - 64px)", width: '100%', backgroundColor: '#e5e5e5' }}
         >   
             <Notifications />
-            {isConfettiVisible && <Confetti />}
             <Box display="flex" style={{  width: '70%' }}>
                 <Box
                     display="flex"
@@ -153,26 +117,24 @@ export default function Guess() {
                         <Typography color="primary.contrastText" align="center" variant="h3"
                             sx={{ fontWeight: 'bold' }}
                         >
-                            Guess the number
+                            Choose a number
                         </Typography>
                         <Divider/>
                         <Typography color="primary.contrastText" align="center" variant='h6'>
-                            {`Prize pool: ${prizePool 
-                                    ? Number(ethers.formatEther(prizePool as bigint)).toFixed(4)
-                                    : ""} ETH`}
+                            Select a number
                         </Typography>
                         <Typography color="primary.contrastText" align="center" variant='h6'>
-                            Your bet is 0.001 ETH
+                            between 1 to 10
                         </Typography>
                         <StyledNumberInput 
-                            value={guessNumber} 
+                            value={secretNumber} 
                             onChange={handleInputChange}
                         />
                         <Typography color="primary.contrastText" align="center" variant="body2"
                             sx={{ fontStyle: 'italic', fontWeight: 'normal' }}>
-                            in the range of 1 to 10
+                            only owner can select a number
                         </Typography>
-                        {guessInProgress ?
+                        {selectInProgress ?
                             <Box sx={{ position: 'relative' }}>
                                 <Button 
                                     color="secondary" 
@@ -199,21 +161,21 @@ export default function Guess() {
                                 disabled = { account.isConnected ? false : true }
                                 onClick={() => handleClick()}                             
                             >
-                                Guess
+                                Select
                             </Button>
                         }
                         <Divider/>
                         <Typography color="primary.contrastText" align="center" variant="body2"
                             sx={{ fontWeight: 'normal' }}>
-                            {`Your ETH balance: ${walletEthBalance 
-                                ? Number(ethers.formatEther(walletEthBalance)).toFixed(4)
+                            {`Contract ETH balance: ${contractEthBalance 
+                                ? Number(ethers.formatEther(contractEthBalance)).toFixed(4)
                                 : ""} ETH`
-                            } 
+                            }   
                         </Typography>
                         <Typography color="primary.contrastText" align="center" variant="body2"
                             sx={{ fontWeight: 'normal' }}>
-                            {`Your GUESS balance: ${walletGuessBalance
-                                ? Number(ethers.formatUnits(walletGuessBalance as bigint, 18)).toFixed(4)
+                            {`Contract GUESS balance: ${contractGuessBalance 
+                                ? Number(ethers.formatUnits(contractGuessBalance as bigint, 18)).toFixed(4)
                                 : ""} GUESS`
                             }
                         </Typography>

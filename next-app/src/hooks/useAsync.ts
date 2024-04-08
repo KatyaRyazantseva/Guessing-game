@@ -20,7 +20,6 @@ export function useAsync<T extends any[], U>(asyncFunction: AsyncFunction<T, U>)
       setInProgress(false);
     }
   }, [asyncFunction]);
-
   return {
     result,
     inProgress,

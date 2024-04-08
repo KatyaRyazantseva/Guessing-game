@@ -1,29 +1,28 @@
 'use client'
-
-import React, { useContext } from 'react';
-import { useEthereum } from './web3/Context';
+import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEthereum } from '../app/web3/Context';
 import Image from "next/image";
-import { AppBar, Box, Toolbar, Button, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { ToggleMenuContext } from './ToggleMenuContext'; 
+import NextLink from 'next/link';
+import { AppBar, Box, Toolbar, Button, Typography, Link } from '@mui/material';
 
 export default function Header() {
-    const { account, connect, disconnect } = useEthereum();
-    const { toggleMenuValue, setToggleMenuValue } = useContext(ToggleMenuContext);
+    const { account, connect, disconnect, getProvider } = useEthereum();
+    const [ connectButtonLabel, setConnectButtonLabel ] = useState("Connect wallet");
+    const pathname = usePathname();
+    const isActive = (href: string) => pathname === href;
     
-    const handleChange = (
-        event: React.MouseEvent<HTMLElement>,
-        selectedPage: boolean,
-      ) => {
-        if (selectedPage === null) return;
-        if (selectedPage !== toggleMenuValue) {
-            setToggleMenuValue(selectedPage);
+    useEffect(() => {
+        if (account.isConnected) {
+            const shortWalletAddress = `${account.address.slice(0,6)}...${account.address.slice(account.address.length-4, account.address.length)}`;
+            setConnectButtonLabel(shortWalletAddress);
+        } else {
+            setConnectButtonLabel("Connect wallet");
         };
-    };
+    }, [account.address, getProvider]); 
 
     return (
-        <Box 
-            sx={{ flexGrow: 1,  color: '#f5f5f5'}}
-        >
+        <Box sx={{ flexGrow: 1,  color: '#f5f5f5'}} >
             <AppBar 
                 position="static" 
                 sx={{ 
@@ -45,39 +44,42 @@ export default function Header() {
                     >
                         GUESSING GAME
                     </Typography>
-                    <ToggleButtonGroup
-                        value={toggleMenuValue}
+                    <Box 
                         color="secondary"
-                        exclusive={true}
-                        onChange={handleChange}
-                        aria-label="main menu"
                         sx={{ 
                             flexGrow: 1, 
                             display: 'flex', 
-                            justifyContent:'center' 
+                            justifyContent:'center',
                         }}
                     >
-                        <ToggleButton value={true}>
-                            <Typography variant="h6" >
+                        <NextLink href="/" passHref legacyBehavior>
+                            <Link 
+                                variant="h6"
+                                color="inherit" 
+                                underline="hover"
+                                sx={{ mr: 3, textDecoration: isActive('/') ? 'underline' : 'none' }}                            
+                            >
                                 GUESS
-                            </Typography>
-                        </ToggleButton>
-                        <ToggleButton value={false}>
-                            <Typography variant="h6" >
+                            </Link>
+                        </NextLink>
+                        <NextLink href="/secret" passHref legacyBehavior>
+                            <Link 
+                                variant="h6"
+                                color="inherit"
+                                underline="hover"
+                                sx={{ textDecoration: isActive('/secret') ? 'underline' : 'none' }} 
+                            >
                                 SECRET
-                            </Typography>
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                            </Link>
+                        </NextLink>
+                    </Box>
                     <Button 
                         color="inherit" 
                         variant="outlined"
                         sx={{ minWidth: '155px', maxWidth: '155px'}}
                         onClick={() => { account.isConnected ? disconnect() : connect() }}
                     >
-                        {account.isConnected 
-                            ? `${account.address.slice(0,6)}...${account.address.slice(account.address.length-4, account.address.length)}` 
-                            : "Connect wallet"
-                        }
+                        {connectButtonLabel}
                     </Button>
                 </Toolbar>
             </AppBar>

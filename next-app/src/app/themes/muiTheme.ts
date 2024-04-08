@@ -19,27 +19,10 @@ export const muiTheme = createTheme({
     },
   },
   components: {
-    MuiToggleButton: {
+    MuiLink: {
       styleOverrides: {
         root: {
-          width: '100px',
-          color: "#fff",
-          border: 'none',
-          borderRadius: '4px',
-          '&.Mui-selected, &.Mui-selected:hover': {
-            color: '#fff',
-            backgroundColor: '#7677BE',
-          }
-        },
-      },
-    },
-    MuiToggleButtonGroup: {
-      styleOverrides: {
-        firstButton: {
-          borderRadius: '4px',
-        },
-        lastButton: {
-          borderRadius: '4px',
+          // lineHeight: '1.5', 
         },
       },
     },

@@ -31,9 +31,33 @@ WALLET_PRIVATE_KEY=your_private_key_here...
 
 `hardhat.config.ts` comes with a list of networks to deploy and test contracts. Add more by adjusting the `networks` section in the `hardhat.config.ts`. To make a network the default, set the `defaultNetwork` to its name. You can also override the default using the `--network` option, like: `hardhat test --network dockerizedNode`.
 
-### Local Tests
+### Local Tests and Deploy
 
-Running `yarn test` by default runs the hardhat tests. Run `yarn test --network inMemoryNode` to run the tests on [zkSync In-memory Node](https://era.zksync.io/docs/tools/testing/era-test-node.html) provided by the [@matterlabs/hardhat-zksync-node](https://era.zksync.io/docs/tools/hardhat/hardhat-zksync-node.html) tool.
+Install and set up zkSync In-memory Node using instructions [here](https://docs.zksync.io/build/test-and-debug/era-test-node.html#installing-and-setting-up-era-test-node). Run the node:
+
+```Shell
+era_test_node run
+```
+
+Running `yarn test` by default runs the hardhat tests. To test the contracts with the inMemoryNode run:
+
+```Shell
+yarn test --network inMemoryNode
+```
+
+When you run inMemoryNode, it returns 10 test accounts. Get the private key of the Account #0 and add it into your .env file:
+
+```Shell
+WALLET_PRIVATE_KEY=<YOUR_inMemoryNode_PRIVATE_KEY>
+```
+
+Deploy the contracts into inMemoryNode:
+
+```Shell
+yarn deploy --network inMemoryNode
+```
+
+If you want to run your app locally with the deployed contracts, put the addresses of the  contracts into `next-app/src/app/web3/contracts.ts`.
 
 Important: zkSync In-memory Node currently supports only the L2 node. If contracts also need L1, use another testing environment like Dockerized Node. Refer to [test documentation](https://era.zksync.io/docs/tools/testing/) for details.
 

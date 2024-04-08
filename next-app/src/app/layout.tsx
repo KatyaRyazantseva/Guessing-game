@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Head from 'next/head';
 import "./globals.css";
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
-import { EthereumProvider } from '../components/web3/Context';
+import { EthereumProvider } from './web3/Context';
 import { ColorSchemeScript } from '@mantine/core';
 
 export const metadata: Metadata = {
