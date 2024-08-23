@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useEthereum } from '../web3/Context';
-import { ErrorDescription, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { gameContractConfig } from '../web3/contracts';
 import { useEthBalance, useTokenBalance } from '../../hooks/useBalance';
 import { useSelectSecretNumber } from '../../hooks/contractReadWrite';
@@ -9,6 +9,7 @@ import {Typography, Button, Stack, Box, CardMedia, Divider, CircularProgress } f
 import StyledNumberInput from '../../components/StyledNumberInput';
 import { Notifications, notifications } from "@mantine/notifications";
 import { SecretNumberActionStatus, NotificationStatusColor } from '../../utils/enums';
+import parseError from '../../utils/errors';
 
 export default function Select() {
     const { account, getProvider } = useEthereum();
@@ -72,11 +73,10 @@ export default function Select() {
     
     useEffect(() => {
         if (selectError != null) {
-            const gameInterface = new ethers.Interface(gameContractConfig.abi);
-            const parsedError = gameInterface.parseError((selectError as any).data);
+            const errorMessage = parseError(selectError);
             notifications.show({
                 title: SecretNumberActionStatus.Error,
-                message: parsedError instanceof ErrorDescription ? parsedError.name : parsedError!.args[0],
+                message: errorMessage,
                 color: NotificationStatusColor.Error,
                 autoClose: 4000,
             });
